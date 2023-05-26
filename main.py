@@ -12,7 +12,7 @@ WIN_HEIGHT = 600
 FPS = 40
 
 
-fon = pygame.image.load(file_path(r"images\download.jpg"))
+fon = pygame.image.load(file_path(r"images\fon.jpg"))
 fon = pygame.transform.scale(fon, (WIN_WIDTH, WIN_HEIGHT ))
 
 window = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))

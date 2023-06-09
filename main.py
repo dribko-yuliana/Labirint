@@ -28,6 +28,10 @@ class GameSprite(pygame.sprite.Sprite):
     def show(self):
         window.blit(self.image, (self.rect.x, self.rect.y))
 
+player = GameSprite(5, 5, 60, 60, r"images\player.jpg")
+enemy1 = GameSprite(100, 60, 60, 60, r"images\enemy1.png")
+finish = GameSprite(200, 50, 35, 60, r"images\finish.jpg")
+
 walls = pygame.sprite.Group()
 wall1 = GameSprite(100, 300, 20, 300, r"images\OIP.jpg")
 walls.add(wall1)
@@ -35,8 +39,8 @@ wall2 = GameSprite(300, 300, 300, 20, r"images\OIP.jpg")
 walls.add(wall2)
 wall3 = GameSprite(100, 300, 300, 20, r"images\OIP.jpg")
 walls.add(wall3)
-level = 1
 
+level = 1
 game = True
 while game:
     for event in pygame.event.get():
@@ -46,6 +50,9 @@ while game:
     if level == 1:
         window.blit(fon, (0, 0))
         walls.draw(window)
+        player.show()
+        enemy1.show()
+        finish.show()
 
     clock.tick(FPS)
     pygame.display.update()

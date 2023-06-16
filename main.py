@@ -12,8 +12,15 @@ WIN_HEIGHT = 600
 FPS = 40
 
 
-fon = pygame.image.load(file_path(r"images\fon.jpg"))
+fon = pygame.image.load(file_path(r"images\background.jpg"))
 fon = pygame.transform.scale(fon, (WIN_WIDTH, WIN_HEIGHT ))
+
+image_win = pygame.image.load(file_path(r"images\fon.jpg"))
+image_win = pygame.transform.scale(image_win, (WIN_WIDTH, WIN_HEIGHT))
+
+image_lose = pygame.image.load(file_path(r"images\background.jpg"))
+image_lose = pygame.transform.scale(image_lose, (WIN_WIDTH, WIN_HEIGHT))
+
 
 window = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 clock = pygame.time.Clock()
@@ -33,9 +40,9 @@ class Player(GameSprite):
         super().__init__(x , y, width, height, image)
         self.speed_x = speed_x
         self.speed_y = speed_y
-        self.direction = "right"
-        self.image_r = self.image
-        self.image_l = pygame.transform.flip(self.image, True, False)
+        self.direction = "left"
+        self.image_l = self.image
+        self.image_r = pygame.transform.flip(self.image, True, False)
 
     def update(self):
         if self.speed_x < 0 and self.rect.left > 0 or self.speed_x > 0 and self.rect.right < WIN_WIDTH:
@@ -44,17 +51,63 @@ class Player(GameSprite):
             self.rect.y += self.speed_y
 
 
-player = Player(5, 5, 60, 60, r"images\player.jpg", 0, 0)
+player = Player(5, 5, 60, 60, r"images\player.png", 0, 0)
 enemy1 = GameSprite(100, 60, 60, 60, r"images\enemy1.png")
-finish = GameSprite(200, 50, 35, 60, r"images\finish.jpg")
+finish = GameSprite(200, 50, 35, 60, r"images\finish.png")
 
 walls = pygame.sprite.Group()
-wall1 = GameSprite(100, 300, 20, 300, r"images\OIP.jpg")
+wall1 = GameSprite(80, 500, 20, 150, r"images\fon.jpg")
 walls.add(wall1)
-wall2 = GameSprite(300, 300, 300, 20, r"images\OIP.jpg")
+wall2 = GameSprite(200, 500, 150, 20, r"images\fon.jpg")
 walls.add(wall2)
-wall3 = GameSprite(100, 300, 300, 20, r"images\OIP.jpg")
+wall3 = GameSprite(80, 400, 275, 20, r"images\fon.jpg")
 walls.add(wall3)
+wall4 = GameSprite(340, 400, 20, 120, r"images\fon.jpg")
+walls.add(wall4)
+wall5 = GameSprite(80, 100, 20, 200, r"images\fon.jpg")
+walls.add(wall5)
+wall6 = GameSprite(80, 80, 120, 20, r"images\fon.jpg")
+walls.add(wall6)
+wall7 = GameSprite(300, 0, 20, 120, r"images\fon.jpg")
+walls.add(wall7)
+wall8 = GameSprite(300, 100, 20, 120, r"images\fon.jpg")
+walls.add(wall8)
+wall9 = GameSprite(200, 200, 120, 20, r"images\fon.jpg")
+walls.add(wall9)
+wall10 = GameSprite(100, 280, 120, 20, r"images\fon.jpg")
+walls.add(wall10)
+wall11 = GameSprite(220, 280, 120, 20, r"images\fon.jpg")
+walls.add(wall11)
+wall12 = GameSprite(340, 280, 120, 20, r"images\fon.jpg")
+walls.add(wall12)
+wall13 = GameSprite(440, 280, 20, 120, r"images\fon.jpg")
+walls.add(wall13)
+wall14 = GameSprite(440, 400, 20, 120, r"images\fon.jpg")
+walls.add(wall14)
+wall15 = GameSprite(580, 500, 120, 20, r"images\fon.jpg")
+walls.add(wall15)
+wall16 = GameSprite(560, 500, 20, 120, r"images\fon.jpg")
+walls.add(wall16)
+wall17 = GameSprite(460, 390, 120, 20, r"images\fon.jpg")
+walls.add(wall17)
+wall18 = GameSprite(560, 390, 120, 20, r"images\fon.jpg")
+walls.add(wall18)
+wall19 = GameSprite(660, 280, 20, 120, r"images\fon.jpg")
+walls.add(wall19)
+wall20 = GameSprite(560, 280, 120, 20, r"images\fon.jpg")
+walls.add(wall20)
+wall21 = GameSprite(540, 180, 20, 120, r"images\fon.jpg")
+walls.add(wall21)
+wall22 = GameSprite(540, 100, 20, 120, r"images\fon.jpg")
+walls.add(wall22)
+wall23 = GameSprite(560, 100, 120, 20, r"images\fon.jpg")
+walls.add(wall23)
+wall24 = GameSprite(435, 100, 120, 20, r"images\fon.jpg")
+walls.add(wall24)
+wall25 = GameSprite(435, 100, 20, 120, r"images\fon.jpg")
+walls.add(wall25)
+wall26 = GameSprite(700, 190, 120, 20, r"images\fon.jpg")
+walls.add(wall26)
 
 level = 1
 game = True
@@ -93,6 +146,12 @@ while game:
         player.update()
         enemy1.show()
         finish.show()
+
+        if pygame.sprite.collide_rect(player, finish):
+            level = 10
+    
+    elif level == 10:
+        window.blit(image_win, (0, 0))
 
     clock.tick(FPS)
     pygame.display.update()

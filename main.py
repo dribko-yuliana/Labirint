@@ -11,14 +11,19 @@ WIN_WIDTH = 800
 WIN_HEIGHT = 600
 FPS = 40
 
+pygame.mixer.music.load(file_path(r"music\Spongebob_Squarepants_The_Yellow_Album_13_Jelly_Fish_Jam.mp3"))
+pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.play(-1)
 
-fon = pygame.image.load(file_path(r"images\background.jpg"))
+
+
+fon = pygame.image.load(file_path(r"images\OIP (1).jpg"))
 fon = pygame.transform.scale(fon, (WIN_WIDTH, WIN_HEIGHT ))
 
-image_win = pygame.image.load(file_path(r"images\fon.jpg"))
+image_win = pygame.image.load(file_path(r"images\win.jpg"))
 image_win = pygame.transform.scale(image_win, (WIN_WIDTH, WIN_HEIGHT))
 
-image_lose = pygame.image.load(file_path(r"images\background.jpg"))
+image_lose = pygame.image.load(file_path(r"images\lose.jpg"))
 image_lose = pygame.transform.scale(image_lose, (WIN_WIDTH, WIN_HEIGHT))
 
 
@@ -47,9 +52,25 @@ class Player(GameSprite):
     def update(self):
         if self.speed_x < 0 and self.rect.left > 0 or self.speed_x > 0 and self.rect.right < WIN_WIDTH:
             self.rect.x += self.speed_x
+        walls_touched = pygame.sprite.spritecollide(self, walls, False)
+        if self.speed_x > 0:
+            for wall in walls_touched:
+                self.rect.right = min(self.rect.right, wall.rect.left)
+        if self.speed_x < 0:
+            for wall in walls_touched:
+                self.rect.left = max(self.rect.left, wall.rect.right)
+
+
         if self.speed_y < 0 and self.rect.top > 0 or self.speed_y > 0 and self.rect.bottom < WIN_HEIGHT:
             self.rect.y += self.speed_y
 
+        walls_touched = pygame.sprite.spritecollide(self, walls, False)
+        if self.speed_y < 0:
+            for wall in walls_touched:
+                self.rect.top = max(self.rect.top, wall.rect.bottom)
+        if self.speed_y > 0:
+            for wall in walls_touched:
+                self.rect.bottom = min(self.rect.bottom, wall.rect.top)
 
 player = Player(5, 5, 60, 60, r"images\player.png", 0, 0)
 enemy1 = GameSprite(100, 60, 60, 60, r"images\enemy1.png")
@@ -108,6 +129,9 @@ wall25 = GameSprite(435, 100, 20, 120, r"images\fon.jpg")
 walls.add(wall25)
 wall26 = GameSprite(700, 190, 120, 20, r"images\fon.jpg")
 walls.add(wall26)
+wall27 = GameSprite(80, 0, 20, 120, r"images\fon.jpg")
+walls.add(wall27)
+
 
 level = 1
 game = True
@@ -149,7 +173,11 @@ while game:
 
         if pygame.sprite.collide_rect(player, finish):
             level = 10
-    
+            pygame.mixer.music.stop()
+            pygame.mixer.music.load(file_path(r"music\Spongebob_Ravioli_Ravioli_Give_Me_the_Formuoli_QuickSounds_com.mp3"))
+            pygame.mixer.music.play(-1)
+
+
     elif level == 10:
         window.blit(image_win, (0, 0))
 

@@ -73,8 +73,11 @@ class Player(GameSprite):
                 self.rect.bottom = min(self.rect.bottom, wall.rect.top)
 
 player = Player(5, 5, 60, 60, r"images\player.png", 0, 0)
-enemy1 = GameSprite(100, 60, 60, 60, r"images\enemy1.png")
-finish = GameSprite(200, 50, 35, 60, r"images\finish.png")
+finish = GameSprite(120, 60, 60, 70, r"images\finish.png")
+
+enemies = pygame.sprite.Group()
+enemy1 = GameSprite(300, 60, 60, 60, r"images\enemy1.png")
+enemies.add(enemy1)
 
 walls = pygame.sprite.Group()
 wall1 = GameSprite(80, 500, 20, 150, r"images\fon.jpg")
@@ -168,7 +171,7 @@ while game:
         walls.draw(window)
         player.show()
         player.update()
-        enemy1.show()
+        enemies.draw(window)
         finish.show()
 
         if pygame.sprite.collide_rect(player, finish):
@@ -177,9 +180,18 @@ while game:
             pygame.mixer.music.load(file_path(r"music\Spongebob_Ravioli_Ravioli_Give_Me_the_Formuoli_QuickSounds_com.mp3"))
             pygame.mixer.music.play(-1)
 
+        if pygame.sprite.spritecollide(player, enemies, False):
+            level = 11 
+            pygame.mixer.music.stop()
+            pygame.mixer.music.load(file_path(r"music\A Few Moments Later (Spongebob) - QuickSounds.com.mp3"))
+            pygame.mixer.music.play(-1)
 
     elif level == 10:
         window.blit(image_win, (0, 0))
+
+    elif level == 11:
+        window.blit(image_lose, (0, 0))
+
 
     clock.tick(FPS)
     pygame.display.update()

@@ -11,11 +11,19 @@ WIN_WIDTH = 800
 WIN_HEIGHT = 600
 FPS = 40
 
-pygame.mixer.music.load(file_path(r"music\Spongebob_Squarepants_The_Yellow_Album_13_Jelly_Fish_Jam.mp3"))
+DARK_BLUE = (0,128,255)
+LIGHT_BLUE = (51,153,255)
+PURPLE = (119,51,255)
+LIGHT_PURPLE = (179,102,255)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+PINK = (255,204,255)
+
+pygame.mixer.music.load(file_path(r"music\A Few Moments Later (Spongebob) - QuickSounds.com.mp3"))
 pygame.mixer.music.set_volume(0.1)
 pygame.mixer.music.play(-1)
 
-music_shoot = pygame.mixer.music.Sound(file_path(r"music\Spongebob Disappointed - QuickSounds.com.mp3"))
+music_shoot = pygame.mixer.Sound(file_path(r"music\bullet.ogg"))
 music_shoot.set_volume(0.50)
 
 
@@ -32,6 +40,22 @@ image_lose = pygame.transform.scale(image_lose, (WIN_WIDTH, WIN_HEIGHT))
 window = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 clock = pygame.time.Clock()
 
+class Button():
+    def __init__(self, x, y, width, height, color1, color2, text, shrift_fon, text_color, text_x, text_y):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.color1 = color1
+        self.color2 = color2
+        self.color = color1
+        shrift = pygame.font.SysFont(shrift_fon, 20)
+        self.text = shrift.render(text, True, text_color)
+        self.text_x = text_x
+        self.text_y = text_y
+   
+    def show(self):
+        pygame.draw.rect(window, self.color, self.rect)
+        window.blit(self.text, (self.rect.x + self.text_x, self.rect.y + self.text_y)) 
+
+
 class GameSprite(pygame.sprite.Sprite):
     def __init__(self, x , y, width, height, image):
         super().__init__()
@@ -47,15 +71,15 @@ class Player(GameSprite):
         super().__init__(x , y, width, height, image)
         self.speed_x = speed_x
         self.speed_y = speed_y
-        self.direction = "left"
-        self.image_l = self.image
-        self.image_r = pygame.transform.flip(self.image, True, False)
+        self.direction = "right"
+        self.image_r = self.image
+        self.image_l = pygame.transform.flip(self.image, True, False)
 
     def shoot(self):
         if self.direction == "right":
-            bullet = Bullet(self.rect.right, self.rect.centeyx, 40, 40, r"images\download.png", 8)
+            bullet = Bullet(self.rect.right, self.rect.centery, 40, 40, r"images\download.png", 5)
         elif self.direction == "left":
-            bullet = Bullet(self.rect.left - 40, self.rect.centery, 40, 40, r"images\download.png", -8 )
+            bullet = Bullet(self.rect.left - 40, self.rect.centery, 40, 40, r"images\download.png", -5 )
             bullet.image = pygame.transform.flip(bullet.image, True, False)
         bullets.add(bullet)
 
@@ -215,7 +239,11 @@ wall27 = GameSprite(80, 0, 20, 120, r"images\fon.jpg")
 walls.add(wall27)
 
 
-level = 1
+btn_start = Button(200, 300, 150, 60, DARK_BLUE, LIGHT_BLUE, "START", "Arial",BLACK, 40, 20)
+btn_exit = Button(420, 300, 150, 60, PURPLE, LIGHT_PURPLE, "EXIT", "Arial", BLACK, 40, 20)
+game_name = pygame.font.SysFont("Arial", 50, 1).render("SPONGE BOB SQUARE PANTS", True, BLACK)
+
+level = 0
 game = True
 while game:
     for event in pygame.event.get():
@@ -225,12 +253,12 @@ while game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     player.speed_x = -5
-                    player.direction = "right"
-                    player.image = player.image_r
-                if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                    player.speed_x = 5
                     player.direction = "left"
                     player.image = player.image_l
+                if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                    player.speed_x = 5
+                    player.direction = "right"
+                    player.image = player.image_r
                 if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     player.speed_y = 5
                 if event.key == pygame.K_UP or event.key == pygame.K_w:
@@ -248,6 +276,29 @@ while game:
                 if event.key == pygame.K_UP or event.key == pygame.K_w:
                     player.speed_y = 0
 
+        elif level == 0:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = event.pos
+                if btn_start.rect.collidepoint(x, y):
+                    level = 1
+                    pygame.mixer.music.load(file_path(r"music\Spongebob_Squarepants_The_Yellow_Album_13_Jelly_Fish_Jam.mp3"))
+                    pygame.mixer.music.set_volume(0.1)
+                    pygame.mixer.music.play(-1)
+                elif btn_exit.rect.collidepoint(x, y):
+                    game = False
+
+            if event.type == pygame.MOUSEMOTION:
+                x, y = event.pos
+                if btn_start.rect.collidepoint(x, y):
+                    btn_start.color = btn_start.color2
+
+                elif btn_exit.rect.collidepoint(x, y):
+                    btn_exit.color = btn_start.color2
+
+                else:
+                    btn_start.color = btn_start.color1
+                    btn_exit.color = btn_exit.color1
+
     if level == 1:
         window.blit(fon, (0, 0))
         walls.draw(window)
@@ -258,7 +309,7 @@ while game:
         finish.show()
         bullets.draw(window)
         bullets.update()
-
+    
         if pygame.sprite.collide_rect(player, finish):
             level = 10
             pygame.mixer.music.stop()
@@ -274,6 +325,11 @@ while game:
         pygame.sprite.groupcollide(bullets, walls, True, False)
         pygame.sprite.groupcollide(bullets, enemies, True, True)
 
+    elif level == 0:
+        window.fill(PINK)
+        btn_start.show()
+        btn_exit.show()
+        window.blit(game_name, (25, 30))
 
     elif level == 10:
         window.blit(image_win, (0, 0))

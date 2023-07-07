@@ -15,6 +15,8 @@ pygame.mixer.music.load(file_path(r"music\Spongebob_Squarepants_The_Yellow_Album
 pygame.mixer.music.set_volume(0.1)
 pygame.mixer.music.play(-1)
 
+music_shoot = pygame.mixer.music.Sound(file_path(r"music\Spongebob Disappointed - QuickSounds.com.mp3"))
+music_shoot.set_volume(0.50)
 
 
 fon = pygame.image.load(file_path(r"images\OIP (1).jpg"))
@@ -49,6 +51,15 @@ class Player(GameSprite):
         self.image_l = self.image
         self.image_r = pygame.transform.flip(self.image, True, False)
 
+    def shoot(self):
+        if self.direction == "right":
+            bullet = Bullet(self.rect.right, self.rect.centeyx, 40, 40, r"images\download.png", 8)
+        elif self.direction == "left":
+            bullet = Bullet(self.rect.left - 40, self.rect.centery, 40, 40, r"images\download.png", -8 )
+            bullet.image = pygame.transform.flip(bullet.image, True, False)
+        bullets.add(bullet)
+
+
     def update(self):
         if self.speed_x < 0 and self.rect.left > 0 or self.speed_x > 0 and self.rect.right < WIN_WIDTH:
             self.rect.x += self.speed_x
@@ -71,6 +82,19 @@ class Player(GameSprite):
         if self.speed_y > 0:
             for wall in walls_touched:
                 self.rect.bottom = min(self.rect.bottom, wall.rect.top)
+
+class Bullet(GameSprite):
+    def __init__(self, x , y, width, height, image, speed):
+        super().__init__(x, y, width, height, image)
+        self.speed = speed
+
+    def update(self):
+        self.rect.x += self.speed
+        if self.rect.right >= WIN_WIDTH or self.rect.left <= 0:
+            self.kill()
+
+
+
 
 class Enemy(GameSprite):
     def __init__ (self, x , y, width, height, image, direction, min_coord, max_coord, speed):
@@ -129,6 +153,10 @@ enemy3 = Enemy(200, 300, 70, 80, r"images\enemy3.png", "right", 100, 430, 7)
 enemies.add(enemy1)
 enemies.add(enemy2)
 enemies.add(enemy3)
+
+bullets = pygame.sprite.Group()
+
+
 
 walls = pygame.sprite.Group()
 wall1 = GameSprite(80, 500, 20, 150, r"images\fon.jpg")
@@ -207,6 +235,9 @@ while game:
                     player.speed_y = 5
                 if event.key == pygame.K_UP or event.key == pygame.K_w:
                     player.speed_y = -5
+                if event.key == pygame.K_SPACE:
+                    player.shoot()
+                    music_shoot.play(1)
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     player.speed_x = 0
@@ -225,6 +256,8 @@ while game:
         enemies.draw(window)
         enemies.update()
         finish.show()
+        bullets.draw(window)
+        bullets.update()
 
         if pygame.sprite.collide_rect(player, finish):
             level = 10
@@ -237,6 +270,10 @@ while game:
             pygame.mixer.music.stop()
             pygame.mixer.music.load(file_path(r"music\A Few Moments Later (Spongebob) - QuickSounds.com.mp3"))
             pygame.mixer.music.play(-1)
+
+        pygame.sprite.groupcollide(bullets, walls, True, False)
+        pygame.sprite.groupcollide(bullets, enemies, True, True)
+
 
     elif level == 10:
         window.blit(image_win, (0, 0))
